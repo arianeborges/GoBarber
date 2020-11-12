@@ -4,6 +4,7 @@
     "node": true
   },
   "extends": [
+    "plugin:react/recommended",
     "airbnb-base",
     "plugin:@typescript-eslint/recommended",
     "prettier/@typescript-eslint",
@@ -23,6 +24,7 @@
     "prettier"
   ],
   "rules": {
+    "prettier/prettier": "error",
     "camelcase": "off",
     "react/jsx-filename-extension": [
       1,
@@ -40,8 +42,7 @@
       {
         "ts": "never"
       }
-    ],
-    "prettier/prettier": "error"
+    ]
   },
   "settings": {
     "import/resolver": {
