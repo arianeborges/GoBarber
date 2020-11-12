@@ -1,4 +1,10 @@
-import React, { InputHTMLAttributes, useEffect, useRef } from 'react';
+import React, {
+  InputHTMLAttributes,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { useField } from '@unform/core';
 
 import { IconBaseProps } from 'react-icons';
@@ -11,8 +17,31 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
 }
 
 const Input: React.FC<InputProps> = ({ name, icon: Icon, ...rest }) => {
-  const inputRef = useRef(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const [isFocused, setIsFocused] = useState(false);
+  const [isFilled, setIsFilled] = useState(false);
+
   const { fieldName, defaultValue, error, registerField } = useField(name);
+
+  // sempre que for criar uma função dentro de uma função usar callback
+  // a função será memorizada e não criada toda vez que for chamada
+  const handleInputFocus = useCallback(() => {
+    setIsFocused(true);
+  }, []);
+
+  const handleInputBlur = useCallback(() => {
+    setIsFocused(false);
+
+    // if (inputRef.current?.value) {
+    //   setIsFilled(true);
+    // } else {
+    //   setIsFilled(false);
+    // }
+
+    // forma de fazer um if-else melhorado
+    setIsFilled(!!inputRef.current?.value);
+  }, []);
 
   useEffect(() => {
     registerField({
@@ -23,9 +52,15 @@ const Input: React.FC<InputProps> = ({ name, icon: Icon, ...rest }) => {
   }, [fieldName, registerField]);
 
   return (
-    <Container>
+    <Container isFilled={isFilled} isFocused={isFocused}>
       {Icon && <Icon size={20} />}
-      <input defaultValue={defaultValue} ref={inputRef} {...rest} />
+      <input
+        onFocus={handleInputFocus}
+        onBlur={handleInputBlur}
+        defaultValue={defaultValue}
+        ref={inputRef}
+        {...rest}
+      />
     </Container>
   );
 };
