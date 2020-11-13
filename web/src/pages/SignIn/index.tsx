@@ -42,9 +42,11 @@ const SignIn: React.FC = () => {
         password: data.password,
       });
     } catch (err) {
-      const error = getValidationErros(err);
+      if (err instanceof Yup.ValidationError) {
+        const error = getValidationErros(err);
 
-      formRef.current?.setErrors(error);
+        formRef.current?.setErrors(error);
+      }
     }
   }, []);
 
