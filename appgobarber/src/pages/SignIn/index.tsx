@@ -7,6 +7,7 @@ import {
   ScrollView,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
+import { useNavigation } from '@react-navigation/native';
 
 import {
   Container,
@@ -23,6 +24,7 @@ import Button from '../../components/Button';
 import logoImg from '../../assets/logo.png';
 
 const SignIn: React.FC = () => {
+  const navigation = useNavigation();
   return (
     <>
       <KeyboardAvoidingView
@@ -41,7 +43,7 @@ const SignIn: React.FC = () => {
             </View>
 
             <Input name="email" icon="mail" placeholder="E-mail" />
-            <Input name="password" icon="lock" placeholder="Password" />
+            <Input name="password" icon="lock" placeholder="Senha" />
 
             <Button
               onPress={() => {
@@ -58,7 +60,7 @@ const SignIn: React.FC = () => {
 
           <CreateAccountButton
             onPress={() => {
-              console.log('deu');
+              navigation.navigate('SignUp');
             }}
           >
             <Icon name="log-in" size={20} color="#FF9000" />
