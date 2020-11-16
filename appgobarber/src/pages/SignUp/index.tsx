@@ -14,6 +14,7 @@ import { useNavigation } from '@react-navigation/native';
 import { Form } from '@unform/mobile';
 import { FormHandles } from '@unform/core';
 import * as Yup from 'yup';
+import api from '../../services/api';
 import getValidationErros from '../../utils/getValidationErros';
 
 import { Container, Title, BackToSignIn, BackToSignInText } from './styles';
@@ -31,51 +32,63 @@ interface SignUpFormData {
 
 const SignUp: React.FC = () => {
   const formRef = useRef<FormHandles>(null);
+  const navigation = useNavigation();
+
   const emailInputRef = useRef<TextInput>(null);
   const passwordInputRef = useRef<TextInput>(null);
 
-  const navigation = useNavigation();
+  const handleSignUp = useCallback(
+    async (data: SignUpFormData) => {
+      try {
+        formRef.current?.setErrors({});
 
-  const handleSignUp = useCallback(async (data: SignUpFormData) => {
-    try {
-      formRef.current?.setErrors({});
+        const schema = Yup.object().shape({
+          name: Yup.string().required('Nome obrigatório'),
+          email: Yup.string()
+            .required('E-mail obrigatório')
+            .email('Digite um e-mail válido'),
+          password: Yup.string().min(6, 'No mínimo 6 dígitos'),
+        });
 
-      const schema = Yup.object().shape({
-        name: Yup.string().required('Nome obrigatório'),
-        email: Yup.string().required('E-mail obrigatório').email(),
-        password: Yup.string().min(6, 'No mínimo 6 dígitos'),
-      });
+        console.log(data);
 
-      await schema.validate(data, { abortEarly: false });
+        await schema.validate(data, { abortEarly: false });
 
-      // await api.post('/users', data);
+        await api.post('/users', data);
 
-      // addToast({
-      //   type: 'success',
-      //   title: 'Cadastro Realizado!',
-      //   description: 'Você já pode fazer seu logon no GoBarber!',
-      // });
+        // addToast({
+        //   type: 'success',
+        //   title: 'Cadastro Realizado!',
+        //   description: 'Você já pode fazer seu logon no GoBarber!',
+        // });
 
-      // history.push('/');
-    } catch (err) {
-      if (err instanceof Yup.ValidationError) {
-        const error = getValidationErros(err);
+        Alert.alert(
+          'Cadastro realizado com sucesso',
+          'Você já pode fazer login na aplicação.',
+        );
 
-        formRef.current?.setErrors(error);
+        navigation.goBack();
+      } catch (err) {
+        if (err instanceof Yup.ValidationError) {
+          const error = getValidationErros(err);
+
+          formRef.current?.setErrors(error);
+        }
+
+        Alert.alert(
+          'Erro no cadastro',
+          'Ocorreu um erro ao fazer cadastro, tente novamente.',
+        );
+
+        // addToast({
+        //   type: 'error',
+        //   title: 'Erro no cadastro',
+        //   description: 'Ocorreu um erro ao fazer cadastro, tente novamente.',
+        // });
       }
-
-      Alert.alert(
-        'Erro no cadastro',
-        'Ocorreu um erro ao fazer cadastro, tente novamente.',
-      );
-
-      // addToast({
-      //   type: 'error',
-      //   title: 'Erro no cadastro',
-      //   description: 'Ocorreu um erro ao fazer cadastro, tente novamente.',
-      // });
-    }
-  }, []);
+    },
+    [navigation],
+  );
 
   return (
     <>
@@ -129,21 +142,17 @@ const SignUp: React.FC = () => {
               />
 
               <Button onPress={() => formRef.current?.submitForm()}>
-                Entrar
+                Cadastrar
               </Button>
             </Form>
           </Container>
-
-          <BackToSignIn
-            onPress={() => {
-              navigation.goBack();
-            }}
-          >
-            <Icon name="arrow-left" size={20} color="#FFF" />
-            <BackToSignInText>Voltar para o login</BackToSignInText>
-          </BackToSignIn>
         </ScrollView>
       </KeyboardAvoidingView>
+
+      <BackToSignIn onPress={() => navigation.goBack()}>
+        <Icon name="arrow-left" size={20} color="#FFF" />
+        <BackToSignInText>Voltar para o logon</BackToSignInText>
+      </BackToSignIn>
     </>
   );
 };
