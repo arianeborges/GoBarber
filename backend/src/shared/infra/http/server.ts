@@ -1,4 +1,5 @@
 import '@shared/infra/typeorm';
+import '@shared/container'
 
 import 'reflect-metadata';
 
