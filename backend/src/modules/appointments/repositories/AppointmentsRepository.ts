@@ -1,5 +1,5 @@
 import { EntityRepository, Repository } from 'typeorm';
-import Appointment from '../models/Appointment';
+import Appointment from '../entities/Appointment';
 
 // this class will be responsible to create, delete, update e remove appointments
 // keep the information saved about these methods
