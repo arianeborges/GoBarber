@@ -5,5 +5,5 @@ import DiskStorageProvider from './StorageProviders/implementations/DiskStorageP
 
 container.registerSingleton<IStorageProvider>(
   'StorageProvider',
-  DiskStorageProvider
+  DiskStorageProvider,
 );

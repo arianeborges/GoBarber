@@ -11,17 +11,20 @@ describe('UpdateUserAvatar', () => {
     const fakeUsersRepository = new FakeUsersRepository();
     const fakeStorageProvider = new FakeStorageProvider();
 
-    const updateUserAvatar = new UpdateUserAvatarService(fakeUsersRepository, fakeStorageProvider);
+    const updateUserAvatar = new UpdateUserAvatarService(
+      fakeUsersRepository,
+      fakeStorageProvider,
+    );
 
     const user = await fakeUsersRepository.create({
       name: 'Mary Loe',
       email: 'mary@example.com',
-      password: '123456'
+      password: '123456',
     });
 
     await updateUserAvatar.execute({
       user_id: user.id,
-      avatarFilename: 'avatar.jpg'
+      avatarFilename: 'avatar.jpg',
     });
 
     expect(user.avatar).toBe('avatar.jpg');
@@ -31,12 +34,17 @@ describe('UpdateUserAvatar', () => {
     const fakeUsersRepository = new FakeUsersRepository();
     const fakeStorageProvider = new FakeStorageProvider();
 
-    const updateUserAvatar = new UpdateUserAvatarService(fakeUsersRepository, fakeStorageProvider);
+    const updateUserAvatar = new UpdateUserAvatarService(
+      fakeUsersRepository,
+      fakeStorageProvider,
+    );
 
-    expect(updateUserAvatar.execute({
-      user_id: 'ari',
-      avatarFilename: 'avatar.jpg'
-    })).rejects.toBeInstanceOf(AppError);
+    await expect(
+      updateUserAvatar.execute({
+        user_id: 'ari',
+        avatarFilename: 'avatar.jpg',
+      }),
+    ).rejects.toBeInstanceOf(AppError);
   });
 
   it('should delete old avatar when updating new one', async () => {
@@ -45,22 +53,25 @@ describe('UpdateUserAvatar', () => {
 
     const deleteFile = jest.spyOn(fakeStorageProvider, 'deleteFile');
 
-    const updateUserAvatar = new UpdateUserAvatarService(fakeUsersRepository, fakeStorageProvider);
+    const updateUserAvatar = new UpdateUserAvatarService(
+      fakeUsersRepository,
+      fakeStorageProvider,
+    );
 
     const user = await fakeUsersRepository.create({
       name: 'Mary Loe',
       email: 'mary@example.com',
-      password: '123456'
+      password: '123456',
     });
 
     await updateUserAvatar.execute({
       user_id: user.id,
-      avatarFilename: 'avatar.jpg'
+      avatarFilename: 'avatar.jpg',
     });
 
     await updateUserAvatar.execute({
       user_id: user.id,
-      avatarFilename: 'avatar2.jpg'
+      avatarFilename: 'avatar2.jpg',
     });
 
     expect(deleteFile).toHaveBeenCalledWith('avatar.jpg');

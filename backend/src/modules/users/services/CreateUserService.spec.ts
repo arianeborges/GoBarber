@@ -8,12 +8,15 @@ describe('CreateUser', () => {
   it('should be able to create a new user', async () => {
     const fakeAppointmentsRepository = new FakeUsersRepository();
     const fakeHashProvider = new FakeHashProvider();
-    const createUser = new CreateUserService(fakeAppointmentsRepository, fakeHashProvider);
+    const createUser = new CreateUserService(
+      fakeAppointmentsRepository,
+      fakeHashProvider,
+    );
 
     const user = await createUser.execute({
       name: 'Mary Loe',
       email: 'mary@example.com',
-      password: '123456'
+      password: '123456',
     });
 
     expect(user).toHaveProperty('id');
@@ -22,18 +25,23 @@ describe('CreateUser', () => {
   it('should not be able to create a new user with the same email address', async () => {
     const fakeAppointmentsRepository = new FakeUsersRepository();
     const fakeHashProvider = new FakeHashProvider();
-    const createUser = new CreateUserService(fakeAppointmentsRepository, fakeHashProvider);
+    const createUser = new CreateUserService(
+      fakeAppointmentsRepository,
+      fakeHashProvider,
+    );
 
     await createUser.execute({
       name: 'Mary Loe',
       email: 'mary@gmail.com',
-      password: '123456'
+      password: '123456',
     });
 
-    expect(createUser.execute({
-      name: 'Mary Loe',
-      email: 'mary@gmail.com',
-      password: '123456'
-    })).rejects.toBeInstanceOf(AppError);
+    await expect(
+      createUser.execute({
+        name: 'Mary Loe',
+        email: 'mary@gmail.com',
+        password: '123456',
+      }),
+    ).rejects.toBeInstanceOf(AppError);
   });
 });
