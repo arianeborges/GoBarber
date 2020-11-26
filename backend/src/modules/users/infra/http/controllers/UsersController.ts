@@ -23,7 +23,6 @@ export default class UsersController {
   }
 
   public async patch(request: Request, response: Response): Promise<Response> {
-
     const updateUserAvatar = container.resolve(UpdateUserAvatarService);
 
     const user = await updateUserAvatar.execute({
