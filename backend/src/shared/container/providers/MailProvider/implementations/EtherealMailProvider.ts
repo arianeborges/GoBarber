@@ -1,5 +1,6 @@
 import nodemailer, { Transporter } from 'nodemailer';
 import { inject, injectable } from 'tsyringe';
+// import AppError from '@shared/errors/AppError';
 import IMailProvider from '../models/IMailProvider';
 import ISendMailDTO from '../dtos/ISendMailDTO';
 import IMailTemplateProvider from '../../MailTemplateProvider/models/IMailTemplateProvider';
@@ -22,6 +23,7 @@ export default class EtherealMailProvider implements IMailProvider {
           pass: account.pass,
         },
       });
+
       this.client = transporter;
     });
   }
@@ -32,22 +34,26 @@ export default class EtherealMailProvider implements IMailProvider {
     subject,
     templateData,
   }: ISendMailDTO): Promise<void> {
-    const message = await this.client.sendMail({
-      from: {
-        name: from?.name || 'Equipe GoBarber',
-        address: from?.email || 'equipe@gobarber.com.br',
-      },
-      to: {
-        name: to.name,
-        address: to.email,
-      },
-      subject,
-      html: await this.mailTemplateProvider.parse(templateData),
-    });
-
-    // eslint-disable-next-line no-console
-    console.log('Message sent: %s', message.messageId);
-    // eslint-disable-next-line no-console
-    console.log('Preview URL: %s', nodemailer.getTestMessageUrl(message));
+    try {
+      const message = await this.client.sendMail({
+        from: {
+          name: from?.name || 'Equipe GoBarber',
+          address: from?.email || 'equipe@gobarber.com.br',
+        },
+        to: {
+          name: to.name,
+          address: to.email,
+        },
+        subject,
+        html: await this.mailTemplateProvider.parse(templateData),
+      });
+      // eslint-disable-next-line no-console
+      console.log('Message sent: %s', message.messageId);
+      // eslint-disable-next-line no-console
+      console.log('Preview URL: %s', nodemailer.getTestMessageUrl(message));
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.log(error.message);
+    }
   }
 }

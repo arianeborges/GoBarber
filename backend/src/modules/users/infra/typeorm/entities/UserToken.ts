@@ -9,7 +9,7 @@ import {
 
 // represents how the data is composed
 // which fields are
-@Entity('users')
+@Entity('user_tokens')
 class UserToken {
   @PrimaryGeneratedColumn('uuid')
   id: string;
