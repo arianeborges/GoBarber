@@ -15,14 +15,14 @@ interface IRequest {
 }
 
 @injectable()
-class UpdateUserAvatarService {
+class UpdateProfileService {
   constructor(
     @inject('UsersRepository')
     private usersRepository: IUsersRepository,
 
     @inject('HashProvider')
     private hashProvider: IHashProvider,
-  ) {}
+  ) { }
 
   public async execute({
     user_id,
@@ -69,4 +69,4 @@ class UpdateUserAvatarService {
   }
 }
 
-export default UpdateUserAvatarService;
+export default UpdateProfileService;
