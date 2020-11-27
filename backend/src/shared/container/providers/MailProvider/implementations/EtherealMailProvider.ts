@@ -1,6 +1,5 @@
 import nodemailer, { Transporter } from 'nodemailer';
 import { inject, injectable } from 'tsyringe';
-// import AppError from '@shared/errors/AppError';
 import IMailProvider from '../models/IMailProvider';
 import ISendMailDTO from '../dtos/ISendMailDTO';
 import IMailTemplateProvider from '../../MailTemplateProvider/models/IMailTemplateProvider';
@@ -47,12 +46,10 @@ export default class EtherealMailProvider implements IMailProvider {
         subject,
         html: await this.mailTemplateProvider.parse(templateData),
       });
-      // eslint-disable-next-line no-console
+
       console.log('Message sent: %s', message.messageId);
-      // eslint-disable-next-line no-console
       console.log('Preview URL: %s', nodemailer.getTestMessageUrl(message));
     } catch (error) {
-      // eslint-disable-next-line no-console
       console.log(error.message);
     }
   }
