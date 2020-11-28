@@ -1,5 +1,4 @@
-import { getDate, getDaysInMonth, getHours } from 'date-fns';
-import { tr } from 'date-fns/locale';
+import { getHours, isAfter } from 'date-fns';
 import { injectable, inject } from 'tsyringe';
 import IAppointmentsRepository from '../repositories/IAppointmentsRespository';
 
@@ -49,7 +48,16 @@ class ListProviderDayAvailabilityService {
         appointment => getHours(appointment.date) === hour,
       );
 
-      return { hour, available: !hasAppointmentInHour };
+      // se o horário já passou tirar da listagem e por isso usa o isAfter(um horario esta depois de outro)
+      // data atual com hora
+      const currentDate = new Date(Date.now());
+      // data de comparação vinda do appointment junto com a hora
+      const compareDate = new Date(year, month - 1, day, hour);
+
+      return {
+        hour,
+        available: !hasAppointmentInHour && isAfter(compareDate, currentDate),
+      };
     });
 
     return availability;
