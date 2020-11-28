@@ -7,16 +7,23 @@ import Appointment from '../infra/typeorm/entities/Appointment';
 import IAppointmentsRepository from '../repositories/IAppointmentsRespository';
 
 interface IRequest {
+  user_id: string;
   provider_id: string;
   date: Date;
 }
 
 @injectable()
 class CreateAppointmentService {
-  constructor(@inject('AppointmentsRepository') private appointmentsRepository: IAppointmentsRepository) { }
+  constructor(
+    @inject('AppointmentsRepository')
+    private appointmentsRepository: IAppointmentsRepository,
+  ) { }
 
-  public async execute({ provider_id, date }: IRequest): Promise<Appointment> {
-
+  public async execute({
+    user_id,
+    provider_id,
+    date,
+  }: IRequest): Promise<Appointment> {
     const appointmentDate = startOfHour(date);
 
     const findAppointmentInSameDate = await this.appointmentsRepository.findByDate(
@@ -28,10 +35,10 @@ class CreateAppointmentService {
     }
 
     const appointment = await this.appointmentsRepository.create({
+      user_id,
       provider_id,
       date: appointmentDate,
     });
-
 
     return appointment;
   }

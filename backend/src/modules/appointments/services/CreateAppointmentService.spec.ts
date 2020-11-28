@@ -13,8 +13,10 @@ describe('CreateAppointment', () => {
       fakeAppointmentsRepository,
     );
   });
+
   it('should be able to create a new appointment', async () => {
     const appointment = await createAppointment.execute({
+      user_id: '1',
       date: new Date(),
       provider_id: '12132456',
     });
@@ -27,12 +29,14 @@ describe('CreateAppointment', () => {
     const appointmentDate = new Date(2020, 4, 10, 11);
 
     await createAppointment.execute({
+      user_id: '1',
       date: appointmentDate,
       provider_id: '12132456',
     });
 
     expect(
       createAppointment.execute({
+        user_id: '1',
         date: appointmentDate,
         provider_id: '12132456',
       }),
