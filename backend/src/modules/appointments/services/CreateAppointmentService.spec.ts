@@ -15,9 +15,13 @@ describe('CreateAppointment', () => {
   });
 
   it('should be able to create a new appointment', async () => {
+    jest.spyOn(Date, 'now').mockImplementationOnce(() => {
+      return new Date(2020, 11, 28, 12).getTime();
+    });
+
     const appointment = await createAppointment.execute({
       user_id: '1',
-      date: new Date(),
+      date: new Date(2020, 11, 28, 13),
       provider_id: '12132456',
     });
 
@@ -26,7 +30,7 @@ describe('CreateAppointment', () => {
   });
 
   it('should not be able to create two appointments on the same time', async () => {
-    const appointmentDate = new Date(2020, 4, 10, 11);
+    const appointmentDate = new Date(2020, 11, 28, 15);
 
     await createAppointment.execute({
       user_id: '1',
@@ -34,11 +38,61 @@ describe('CreateAppointment', () => {
       provider_id: '12132456',
     });
 
-    expect(
+    await expect(
       createAppointment.execute({
         user_id: '1',
         date: appointmentDate,
         provider_id: '12132456',
+      }),
+    ).rejects.toBeInstanceOf(AppError);
+  });
+
+  it('should not be able to create an appointments on a past date', async () => {
+    jest.spyOn(Date, 'now').mockImplementationOnce(() => {
+      return new Date(2020, 11, 28, 12).getTime();
+    });
+
+    await expect(
+      createAppointment.execute({
+        user_id: '1',
+        provider_id: '12132456',
+        date: new Date(2020, 11, 28, 11),
+      }),
+    ).rejects.toBeInstanceOf(AppError);
+  });
+
+  it('should not be able to create a new appointment with same user as provider', async () => {
+    jest.spyOn(Date, 'now').mockImplementationOnce(() => {
+      return new Date(2020, 11, 28, 12).getTime();
+    });
+
+    await expect(
+      createAppointment.execute({
+        user_id: '12132456',
+        provider_id: '12132456',
+        date: new Date(2020, 11, 28, 13),
+      }),
+    ).rejects.toBeInstanceOf(AppError);
+  });
+
+  it('should not be able to create a new appointment before 8am and after 5pm', async () => {
+    jest.spyOn(Date, 'now').mockImplementationOnce(() => {
+      return new Date(2020, 11, 28, 12).getTime();
+    });
+
+    await expect(
+      createAppointment.execute({
+        user_id: '1',
+        provider_id: '12132456',
+        date: new Date(2020, 11, 28, 7),
+      }),
+    ).rejects.toBeInstanceOf(AppError);
+
+    await expect(
+      createAppointment.execute({
+        user_id: '1',
+        provider_id: '12132456',
+        date: new Date(2020, 11, 28, 18),
       }),
     ).rejects.toBeInstanceOf(AppError);
   });
