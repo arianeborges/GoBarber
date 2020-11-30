@@ -1,7 +1,8 @@
+import 'reflect-metadata';
+import 'dotenv/config';
+
 import '@shared/infra/typeorm';
 import '@shared/container';
-
-import 'reflect-metadata';
 
 import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
