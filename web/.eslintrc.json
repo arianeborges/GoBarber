@@ -26,6 +26,7 @@
   ],
   "rules": {
     "prettier/prettier": "error",
+    "no-console":"off",
     "no-use-before-define": "off",
     "react-hooks/rules-of-hooks": "error",
     "react-hooks/exhaustive-deps": "warn",
