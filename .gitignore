@@ -9,4 +9,5 @@ ormconfig.json
 dist
 
 tmp/*
+uploads/*
 !tmp/.gitkeep
