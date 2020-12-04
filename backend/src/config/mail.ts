@@ -1,9 +1,8 @@
 interface IMailConfig {
-  // driver: 'ethereal' | 'ses';
-  driver: 'ethereal';
+  driver: 'ethereal' | 'ses';
   defaults: {
     from: {
-      mail: string;
+      email: string;
       name: string;
     };
   };
@@ -14,8 +13,8 @@ export default {
 
   defaults: {
     from: {
-      mail: 'contato@notesflix.com',
-      name: 'Ariane Santos Borges',
+      email: 'contato@notesflix.com',
+      name: 'Ariane da Gobarber',
     },
   },
 } as IMailConfig;
