@@ -32,17 +32,19 @@ interface ProfileFormData {
   name: string;
   email: string;
   password: string;
+  old_password: string;
+  password_confirmation: string;
 }
 
 const Profile: React.FC = () => {
-  const { user } = useAuth();
+  const { user, updateUser } = useAuth();
   const formRef = useRef<FormHandles>(null);
   const navigation = useNavigation();
 
   const emailInputRef = useRef<TextInput>(null);
   const oldPasswordInputRef = useRef<TextInput>(null);
   const passwordInputRef = useRef<TextInput>(null);
-  const confirmPasswordInputRef = useRef<TextInput>(null);
+  const passwordConfirmationInputRef = useRef<TextInput>(null);
 
   const handleSignUp = useCallback(
     async (data: ProfileFormData) => {
@@ -54,19 +56,41 @@ const Profile: React.FC = () => {
           email: Yup.string()
             .required('E-mail obrigatório')
             .email('Digite um e-mail válido'),
-          password: Yup.string().min(6, 'No mínimo 6 dígitos'),
+          old_password: Yup.string(),
+          password: Yup.string().when('old_password', {
+            is: value => !!value.length,
+            then: Yup.string().required('Campo obrigatório'),
+            otherwise: Yup.string(),
+          }),
+          password_confirmation: Yup.string()
+            .when('password', {
+              is: value => !!value.length,
+              then: Yup.string().required('Campo obrigatório'),
+              otherwise: Yup.string(),
+            })
+            .oneOf([Yup.ref('password')], 'Confirmação incorreta'),
         });
 
         console.log(data);
 
         await schema.validate(data, { abortEarly: false });
 
-        await api.post('/users', data);
+        const formData = {
+          name: data.name,
+          email: data.email,
+          ...(data.old_password
+            ? {
+                old_password: data.password,
+                password_confirmation: data.password_confirmation,
+              }
+            : {}),
+        };
 
-        Alert.alert(
-          'Cadastro realizado com sucesso',
-          'Você já pode fazer login na aplicação.',
-        );
+        const response = await api.put('/profile', formData);
+
+        updateUser(response.data);
+
+        Alert.alert('Perfil atualizado com sucesso');
 
         navigation.goBack();
       } catch (err) {
@@ -79,17 +103,18 @@ const Profile: React.FC = () => {
         }
 
         Alert.alert(
-          'Erro no cadastro',
-          'Ocorreu um erro ao fazer cadastro, tente novamente.',
+          'Erro na atualização do perfil',
+          'Ocorreu um erro ao atualizar seu perfil, tente novamente.',
         );
       }
     },
-    [navigation],
+    [navigation, updateUser],
   );
 
   const handleGoBack = useCallback(() => {
     navigation.goBack();
   }, [navigation]);
+
   return (
     <>
       <KeyboardAvoidingView
@@ -113,7 +138,12 @@ const Profile: React.FC = () => {
             <View>
               <Title>Meu perfil</Title>
             </View>
-            <Form ref={formRef} onSubmit={handleSignUp}>
+
+            <Form
+              initialData={{ name: user.name, email: user.name }}
+              ref={formRef}
+              onSubmit={handleSignUp}
+            >
               <Input
                 autoCapitalize="words"
                 name="name"
@@ -159,11 +189,11 @@ const Profile: React.FC = () => {
                 textContentType="newPassword"
                 returnKeyType="next"
                 onSubmitEditing={() => {
-                  confirmPasswordInputRef.current?.focus();
+                  passwordConfirmationInputRef.current?.focus();
                 }}
               />
               <Input
-                ref={confirmPasswordInputRef}
+                ref={passwordConfirmationInputRef}
                 secureTextEntry
                 name="confirm_password"
                 icon="lock"
