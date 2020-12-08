@@ -1,5 +1,4 @@
 import { Platform } from 'react-native';
-import { getBottomSpace } from 'react-native-iphone-x-helper';
 import styled from 'styled-components/native';
 
 export const Container = styled.View`
@@ -9,26 +8,28 @@ export const Container = styled.View`
   padding: 0 30px ${Platform.OS === 'android' ? 150 : 40}px;
 `;
 
+export const Header = styled.View`
+  padding: 24px;
+  margin-bottom: 140px;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 54px;
+  background: #28262e;
+  z-index: 1;
+`;
+
 export const Title = styled.Text`
-  font-size: 20px;
+  font-size: 25px;
   color: #f4ede8;
   font-family: 'RobotoSlab-Medium';
-
-  margin: 24px 0;
 `;
 
-export const BackButton = styled.TouchableOpacity`
-  margin-top: 40px;
-`;
-
-export const UserAvatarButton = styled.TouchableOpacity`
-  margin-top: 32px;
-`;
+export const UserAvatarButton = styled.TouchableOpacity``;
 
 export const UserAvatar = styled.Image`
   width: 186px;
   height: 186px;
   border-radius: 98px;
-
   align-self: center;
 `;

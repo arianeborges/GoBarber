@@ -16,13 +16,12 @@ import * as Yup from 'yup';
 import Icon from 'react-native-vector-icons/Feather';
 import api from '../../services/api';
 import getValidationErros from '../../utils/getValidationErros';
-
 import {
   Container,
+  Header,
   Title,
-  UserAvatarButton,
   UserAvatar,
-  BackButton,
+  UserAvatarButton,
 } from './styles';
 
 import Input from '../../components/Input';
@@ -38,7 +37,7 @@ interface ProfileFormData {
 }
 
 const Profile: React.FC = () => {
-  const { user, updateUser } = useAuth();
+  const { user, updateUser, signOut } = useAuth();
   const formRef = useRef<FormHandles>(null);
   const navigation = useNavigation();
 
@@ -47,7 +46,7 @@ const Profile: React.FC = () => {
   const passwordInputRef = useRef<TextInput>(null);
   const passwordConfirmationInputRef = useRef<TextInput>(null);
 
-  const handleSignUp = useCallback(
+  const handleProfile = useCallback(
     async (data: ProfileFormData) => {
       try {
         formRef.current?.setErrors({});
@@ -72,8 +71,6 @@ const Profile: React.FC = () => {
             .oneOf([Yup.ref('password')], 'Confirmação incorreta'),
         });
 
-        console.log(data);
-
         await schema.validate(data, { abortEarly: false });
 
         const formData = {
@@ -91,7 +88,7 @@ const Profile: React.FC = () => {
 
         updateUser(response.data);
 
-        Alert.alert('Perfil atualizado com sucesso');
+        Alert.alert('Perfil atualizado com sucesso!');
 
         navigation.goBack();
       } catch (err) {
@@ -160,30 +157,32 @@ const Profile: React.FC = () => {
           keyboardShouldPersistTaps="handled"
           contentContainerStyle={{ flex: 1 }}
         >
-          <Container>
-            <BackButton onPress={handleGoBack}>
-              <Icon name="chevron-left" size={24} color="#999591" />
-            </BackButton>
+          <Header>
+            <Icon
+              name="arrow-left"
+              size={24}
+              color="#999591"
+              onPress={handleGoBack}
+            />
 
+            <Title>Meu Perfil</Title>
+
+            <Icon name="power" size={24} color="#999591" onPress={signOut} />
+          </Header>
+
+          <Container>
             <UserAvatarButton onPress={handleUpdateAvatar}>
               <UserAvatar source={{ uri: user.avatar_url }} />
             </UserAvatarButton>
 
-            <View>
-              <Title>Meu perfil</Title>
-            </View>
-
-            <Form
-              initialData={{ name: user.name, email: user.name }}
-              ref={formRef}
-              onSubmit={handleSignUp}
-            >
+            <Form initialData={user} ref={formRef} onSubmit={handleProfile}>
               <Input
                 autoCapitalize="words"
                 name="name"
                 icon="user"
                 placeholder="Nome"
                 returnKeyType="next"
+                containerStyle={{ marginTop: 20 }}
                 onSubmitEditing={() => {
                   emailInputRef.current?.focus();
                 }}
@@ -229,7 +228,7 @@ const Profile: React.FC = () => {
               <Input
                 ref={passwordConfirmationInputRef}
                 secureTextEntry
-                name="confirm_password"
+                name="password_confirmation"
                 icon="lock"
                 placeholder="Confirmar senha"
                 textContentType="newPassword"
