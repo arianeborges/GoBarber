@@ -4,6 +4,7 @@ import { format } from 'date-fns';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Feather';
 import { Alert, Platform } from 'react-native';
+
 import {
   Container,
   Header,
@@ -49,16 +50,16 @@ interface AvailabilityItem {
 }
 
 const CreateAppointment: React.FC = () => {
-  const { user } = useAuth();
-  const { goBack, navigate } = useNavigation();
   const route = useRoute();
   const routeParams = route.params as RouteParams;
+  const { user } = useAuth();
+  const { goBack, navigate } = useNavigation();
 
   const [availability, setAvailability] = useState<AvailabilityItem[]>([]);
   const [selectedHour, setSelectedHour] = useState(0);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [providers, setProviders] = useState([]);
+  const [providers, setProviders] = useState<Provider[]>([]);
   const [selectedProvider, setSelectedProvider] = useState(
     routeParams.providerId,
   );
@@ -75,7 +76,7 @@ const CreateAppointment: React.FC = () => {
         params: {
           year: selectedDate.getFullYear(),
           month: selectedDate.getMonth() + 1,
-          date: selectedDate.getDate(),
+          day: selectedDate.getDate(),
         },
       })
       .then(response => {
@@ -127,8 +128,8 @@ const CreateAppointment: React.FC = () => {
       navigate('AppointmentCreated', { date: date.getTime() });
     } catch (err) {
       Alert.alert(
-        'Erro na autenticação',
-        'Ocorreu um erro ao fazer login, cheque as credenciais.',
+        'Erro ao criar agendamento',
+        'Ocorreu um erro ao tentar criar o agendamento, tente novamente.',
       );
     }
   }, [navigate, selectedDate, selectedHour, selectedProvider]);
@@ -161,7 +162,7 @@ const CreateAppointment: React.FC = () => {
     <Container>
       <Header>
         <BackButton onPress={navigateBack}>
-          <Icon name="chevron-left" size={24} color="#999591" />
+          <Icon name="arrow-left" size={24} color="#999591" />
         </BackButton>
         <HeaderTitle>Cabeleireiros</HeaderTitle>
         <UserAvatar source={{ uri: user.avatar_url }} />
@@ -201,8 +202,8 @@ const CreateAppointment: React.FC = () => {
             <DateTimePicker
               mode="date"
               display="calendar"
-              onChange={handleDateChanged}
               // textColor="#f4ede8"
+              onChange={handleDateChanged}
               value={selectedDate}
             />
           )}

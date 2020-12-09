@@ -67,25 +67,21 @@ const SignIn: React.FC = () => {
           password: data.password,
         });
 
-        // history.push('/dashboard');
+        navigation.navigate('Dashboard');
       } catch (err) {
         if (err instanceof Yup.ValidationError) {
           const error = getValidationErros(err);
 
           formRef.current?.setErrors(error);
         }
+
         Alert.alert(
           'Erro na autenticação',
           'Ocorreu um erro ao fazer login, cheque as credenciais.',
         );
-        // addToast({
-        //   type: 'error',
-        //   title: 'Erro na autenticação',
-        //   description: 'Ocorreu um erro ao fazer login, cheque as credenciais.',
-        // });
       }
     },
-    [signIn],
+    [navigation, signIn],
   );
 
   return (

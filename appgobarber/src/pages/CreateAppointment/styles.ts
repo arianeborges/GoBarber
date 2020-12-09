@@ -27,7 +27,7 @@ export const Container = styled.View`
 
 export const Header = styled.View`
   padding: 24px;
-  padding-top: ${getStatusBarHeight(true) + 24}px;
+  padding-top: ${getStatusBarHeight() + 24}px;
   background: #28262e;
 
   flex-direction: row;
@@ -51,12 +51,7 @@ export const UserAvatar = styled.Image`
   margin-left: auto;
 `;
 
-export const Content = styled.ScrollView`
-  width: 56px;
-  height: 56px;
-  border-radius: 28px;
-  margin-left: auto;
-`;
+export const Content = styled.ScrollView``;
 
 export const ProvidersListContainer = styled.View`
   height: 112px;
